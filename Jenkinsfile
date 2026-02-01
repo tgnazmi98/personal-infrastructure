@@ -8,6 +8,8 @@ pipeline {
     environment {
         COMPOSE_FILE = '/home/tgnazmi/docker-container/docker-compose.yml'
         INFRA_DIR    = '/home/tgnazmi/docker-container'
+        FRONTEND_DIR  = '/home/tgnazmi/docker-container/repos/frontend'
+        BACKEND_DIR   = '/home/tgnazmi/docker-container/repos/backend'
     }
 
     stages {
@@ -26,7 +28,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Pull Backend') {
             steps {
                 dir("${BACKEND_DIR}") {
