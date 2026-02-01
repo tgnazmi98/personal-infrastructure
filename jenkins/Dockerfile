@@ -18,4 +18,7 @@ RUN apt-get update && \
 # Create docker group with host GID and add jenkins user
 RUN groupadd -g 989 docker && usermod -aG docker jenkins
 
+# Create host-mapped workspace parent so Jenkins can write @tmp dirs
+RUN mkdir -p /home/tgnazmi && chown jenkins:jenkins /home/tgnazmi
+
 USER jenkins
