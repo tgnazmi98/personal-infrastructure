@@ -19,6 +19,22 @@ pipeline {
             }
         }
 
+        stage('Pull Frontend') {
+            steps {
+                dir("${FRONTEND_DIR}") {
+                    sh 'git pull origin main'
+                }
+            }
+        }
+        
+        stage('Pull Backend') {
+            steps {
+                dir("${BACKEND_DIR}") {
+                    sh 'git pull origin main'
+                }
+            }
+        }
+
         stage('Deploy Infrastructure') {
             steps {
                 sh "docker compose -f ${COMPOSE_FILE} up -d --build"
