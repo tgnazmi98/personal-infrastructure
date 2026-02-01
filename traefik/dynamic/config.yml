@@ -32,9 +32,25 @@ http:
         idleConnTimeout: "86400s"
 
   routers:
+    jenkins:
+      rule: "Host(`jenkins.opengrid.com.my`)"
+      entryPoints:
+        - web
+      middlewares:
+        - proxy-headers
+        - jenkins-buffering
+      service: jenkins
+
     catch-all:
       rule: "PathPrefix(`/`)"
       priority: 1
       entryPoints:
         - web
       service: noop@internal
+
+  services:
+    jenkins:
+      loadBalancer:
+        serversTransport: jenkins-timeout
+        servers:
+          - url: "http://host.docker.internal:8090"

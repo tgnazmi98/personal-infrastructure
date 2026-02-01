@@ -110,34 +110,10 @@ services:
       retries: 3
       start_period: 30s
 
-  jenkins:
-    build: ./jenkins
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=true
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /home/tgnazmi/docker-container:/home/tgnazmi/docker-container
-      - /home/tgnazmi/.ssh:/var/jenkins_home/.ssh:ro
-    networks:
-      - opengrid
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/login"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jenkins.rule=Host(`${JENKINS_DOMAIN}`)"
-      - "traefik.http.routers.jenkins.entrypoints=web"
-      - "traefik.http.routers.jenkins.middlewares=proxy-headers@file,jenkins-buffering@file"
-      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
-      - "traefik.http.services.jenkins.loadbalancer.serversTransport=jenkins-timeout@file"
-
   traefik:
     image: traefik:3.6.7
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - "--configFile=/etc/traefik/traefik.yml"
     ports:
@@ -194,4 +170,3 @@ networks:
 
 volumes:
   timescale_data:
-  jenkins_data:

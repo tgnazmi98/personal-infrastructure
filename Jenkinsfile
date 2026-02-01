@@ -19,21 +19,9 @@ pipeline {
             }
         }
 
-        stage('Rebuild Traefik') {
+        stage('Deploy Infrastructure') {
             steps {
-                sh "docker compose -f ${COMPOSE_FILE} up -d --no-deps traefik"
-            }
-        }
-
-        stage('Rebuild Jenkins') {
-            steps {
-                sh "docker compose -f ${COMPOSE_FILE} build jenkins"
-            }
-        }
-
-        stage('Recreate Jenkins') {
-            steps {
-                sh "docker compose -f ${COMPOSE_FILE} up -d --no-deps jenkins"
+                sh "docker compose -f ${COMPOSE_FILE} up -d --build"
             }
         }
     }
