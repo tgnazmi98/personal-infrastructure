@@ -7,7 +7,3 @@ repos/
 # Claude config
 .claude/
 
-# Old duplicate directories (should be deleted)
-backend/
-frontend/
-logger/
