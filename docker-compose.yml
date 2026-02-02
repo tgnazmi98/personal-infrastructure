@@ -91,6 +91,53 @@ services:
       - "traefik.http.routers.frontend.middlewares=proxy-headers@file"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
+  usim-hyres-frontend:
+    build: ./repos/usim-hyres-frontend
+    networks:
+      - opengrid
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.usim-hyres.rule=Host(`${USIM_HYRES_DOMAIN}`)"
+      - "traefik.http.routers.usim-hyres.entrypoints=web"
+      - "traefik.http.routers.usim-hyres.middlewares=proxy-headers@file"
+      - "traefik.http.services.usim-hyres.loadbalancer.server.port=80"
+
+  usim-hyres-backend:
+    build: ./repos/usim-hyres-backend
+    environment:
+      - SECRET_KEY=${USIM_HYRES_SECRET_KEY}
+      - DEBUG=${USIM_HYRES_DEBUG:-False}
+      - ALLOWED_HOSTS=${USIM_HYRES_ALLOWED_HOSTS}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@timescaledb:5432/${USIM_HYRES_DB_NAME}
+      - CORS_ALLOWED_ORIGINS=${USIM_HYRES_CORS_ORIGINS}
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    networks:
+      - opengrid
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/login/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.usim-hyres-backend.rule=Host(`${USIM_HYRES_DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.usim-hyres-backend.entrypoints=web"
+      - "traefik.http.routers.usim-hyres-backend.priority=20"
+      - "traefik.http.routers.usim-hyres-backend.middlewares=usim-hyres-strip,proxy-headers@file"
+      - "traefik.http.middlewares.usim-hyres-strip.stripprefix.prefixes=/api"
+      - "traefik.http.services.usim-hyres-backend.loadbalancer.server.port=8000"
+
   logger:
     build: ./repos/backend/logger
     environment:
