@@ -39,7 +39,6 @@ services:
     command: >
       sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
-             python manage.py setup_timescaledb &&
              python manage.py collectstatic --noinput &&
              daphne -b 0.0.0.0 -p 8000 electrical_monitoring.asgi:application"
     healthcheck:
@@ -122,9 +121,14 @@ services:
         condition: service_healthy
     networks:
       - opengrid
+    command: >
+      sh -c "python manage.py makemigrations &&
+          python manage.py migrate &&
+          python manage.py collectstatic --noinput &&
+          daphne -b 0.0.0.0 -p 8000 hyres-backend.asgi:application"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/login/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/login/"]
       interval: 30s
       timeout: 10s
       retries: 3
