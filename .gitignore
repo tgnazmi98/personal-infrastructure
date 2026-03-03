@@ -7,3 +7,5 @@ repos/
 # Claude config
 .claude/
 
+.DS_Store
+
