@@ -37,8 +37,7 @@ services:
     networks:
       - opengrid
     command: >
-      sh -c "python manage.py makemigrations &&
-             python manage.py migrate &&
+      sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              daphne -b 0.0.0.0 -p 8000 electrical_monitoring.asgi:application"
     healthcheck:
@@ -122,8 +121,7 @@ services:
     networks:
       - opengrid
     command: >
-      sh -c "python manage.py makemigrations &&
-          python manage.py migrate &&
+      sh -c "python manage.py migrate &&
           python manage.py collectstatic --noinput &&
           daphne -b 0.0.0.0 -p 8000 hyres_backend.asgi:application"
     restart: unless-stopped
@@ -137,7 +135,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.usim-hyres-backend.rule=Host(`${USIM_HYRES_DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.usim-hyres-backend.entrypoints=web"
-      - "traefik.http.routers.usim-hyres-backend.priority=20"
+      - "traefik.http.routers.usim-hyres-backend.priority=100"
       - "traefik.http.routers.usim-hyres-backend.middlewares=usim-hyres-strip,proxy-headers@file"
       - "traefik.http.middlewares.usim-hyres-strip.stripprefix.prefixes=/api"
       - "traefik.http.services.usim-hyres-backend.loadbalancer.server.port=8000"
