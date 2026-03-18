@@ -126,7 +126,7 @@ services:
       - "traefik.http.services.usim-hyres.loadbalancer.server.port=80"
 
   usim-hyres-backend:
-    build: ./repos/usim-hyres-backend
+    build: ./repos/usim-hyres-backend/django
     environment:
       - SECRET_KEY=${USIM_HYRES_SECRET_KEY}
       - DEBUG=${USIM_HYRES_DEBUG:-False}
